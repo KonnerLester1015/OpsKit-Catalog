@@ -15,4 +15,4 @@ $ScriptInfo = @{
     Platforms       = @()
 }
 
-Invoke-Expression "Get-Date"
+[pscustomobject]@{ ComputerName = $ComputerName }
