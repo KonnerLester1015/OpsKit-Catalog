@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>About · OpsKit Catalog</title>
+  <meta name="description" content="What OpsKit and the catalog are, why everything is free, how packages are checked, and the licence.">
+  <meta name="opskit-repo" content="{{REPO_URL}}">
+  <meta name="theme-color" content="#0c0c0c">
+  <link rel="canonical" href="{{BASE_URL}}about.html">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
+  <script src="assets/js/theme.js"></script>
+  <script type="module" src="assets/js/common.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">&gt;_</span><span>OpsKit <span class="brand-sub">Catalog</span></span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="./">Browse</a>
+        <a href="submit.html">Submit</a>
+        <a href="about.html" aria-current="page">About</a>
+        <a href="{{REPO_URL}}">GitHub</a>
+      </nav>
+      <div class="theme-slot"><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Switch theme" hidden><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <div class="container">
+      <div class="page-head">
+        <h1>About the catalog</h1>
+        <p class="lead">A free, community-run collection of script packages for OpsKit, the PowerShell terminal toolkit for system administrators.</p>
+      </div>
+
+      <div class="prose">
+        <h2 id="opskit">What is OpsKit?</h2>
+        <p><a href="{{OPSKIT_URL}}">OpsKit</a> is an open-source PowerShell 7.4+ toolkit that puts your admin scripts behind a fast keyboard-driven terminal menu. Scripts become menu entries, their parameters become prompts, and their output becomes tables you can export. You add scripts by dropping folders into it.</p>
+        <p>This catalog is where those folders are shared. Each package is one folder and becomes one OpsKit menu entry.</p>
+
+        <h2 id="free">Why is everything free?</h2>
+        <p>Admins have been sharing scripts for as long as there have been admins. The catalog just makes them easier to find, read and install. Every package is MIT licensed, the site is static on GitHub Pages, and there's nothing to sell: no accounts, ratings, comments, analytics, tracking or cookies.</p>
+
+        <h2 id="safety">Safety model</h2>
+        <div class="notice" role="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg><p><strong>Community scripts run with your permissions.</strong> Read the code before running it, and try it somewhere safe first.</p></div>
+        <p>What the catalog does to keep packages trustworthy:</p>
+        <ul>
+          <li><strong>Everything is readable.</strong> Packages may only contain <code>.ps1</code>, <code>.psd1</code> and <code>.md</code> files, at most 256 KB. No binaries. Every file is shown on the package page, exactly as it is in the zip.</li>
+          <li><strong>Automated checks.</strong> CI parses every script, runs PSScriptAnalyzer and rejects patterns that hide or fetch code (<code>Invoke-Expression</code>, encoded commands, base64 payloads, download-and-run), weaken security tools, contain hard-coded secrets, or persist through profiles and startup locations.</li>
+          <li><strong>Human review.</strong> A maintainer reviews every pull request that touches <code>packages/</code>. Exceptions to the banned patterns need a written reason and a maintainer's approval.</li>
+          <li><strong>Metadata is never executed.</strong> The build reads <code>$ScriptInfo</code> from the PowerShell syntax tree. No package code runs during the build.</li>
+          <li><strong>Checksums.</strong> Each zip's SHA-256 is published in <code>catalog.json</code> and on the package page.</li>
+        </ul>
+        <p>What it can't do: automated checks and review reduce risk, they don't remove it. A script that deletes users is doing its job. Read what it does before you run it. If something looks wrong, use <strong>Report a problem</strong> on the package page.</p>
+
+        <h2 id="licence">Licence</h2>
+        <p>The catalog and every package in it are released under the <a href="{{REPO_URL}}/blob/{{BRANCH}}/LICENSE">MIT licence</a>. By submitting a package you agree to license it under MIT.</p>
+
+        <h2 id="faq">FAQ</h2>
+        <details>
+          <summary>How do I install a package?</summary>
+          <p>Download the zip from its package page and extract it into your OpsKit <code>Custom/</code> folder, so the package folder sits directly inside it. Restart OpsKit. Installing from inside OpsKit (Catalog › Install) is coming.</p>
+        </details>
+        <details>
+          <summary>How do I update a package?</summary>
+          <p>Download the new zip and extract it over the old folder. The version number is in <code>module.psd1</code> and on the package page.</p>
+        </details>
+        <details>
+          <summary>Can tools other than OpsKit read the catalog?</summary>
+          <p>Yes. <a href="catalog.json">catalog.json</a> lists every package with its scripts, parameters, download URL and SHA-256. The format is versioned and described by a <a href="{{REPO_URL}}/blob/{{BRANCH}}/schema/catalog.schema.json">JSON Schema</a>.</p>
+        </details>
+        <details>
+          <summary>Does the site track me?</summary>
+          <p>No. It's static files on GitHub Pages with no analytics, cookies or third-party requests. Your theme choice is saved in your browser's local storage and never leaves it. GitHub may keep its own server logs; see GitHub's privacy statement.</p>
+        </details>
+        <details>
+          <summary>A script did something bad. What now?</summary>
+          <p>Open a <a href="{{REPO_URL}}/issues/new?template=package-problem.yml">problem report</a>. For anything that looks malicious, say so in the title and a maintainer will pull the package first and investigate after.</p>
+        </details>
+        <details>
+          <summary>Can I sell scripts here, or link to paid ones?</summary>
+          <p>No. Everything in the catalog is free and MIT licensed, and scripts must work without a paid add-on from the author.</p>
+        </details>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Free and open source. Every package is MIT licensed. No accounts, tracking or cookies.</p>
+      <nav aria-label="Footer">
+        <a href="catalog.json">catalog.json</a>
+        <a href="{{REPO_URL}}">Catalog source on GitHub</a>
+        <a href="{{OPSKIT_URL}}">OpsKit</a>
+        <a href="about.html#safety">Safety</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

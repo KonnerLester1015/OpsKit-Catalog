@@ -1,0 +1,53 @@
+name: Problem with a package
+description: A script or widget is broken, misbehaves or looks unsafe.
+title: "[Package] "
+labels: ["package-problem"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If a package looks **malicious**, say so in the title. A maintainer will pull it first and investigate after.
+  - type: input
+    id: package
+    attributes:
+      label: Package id
+      description: The id shown on the package page, for example ActiveDirectory.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem?
+      options:
+        - It doesn't work
+        - It does something it shouldn't
+        - It looks unsafe or malicious
+        - The description or docs are wrong
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: script
+    attributes:
+      label: Script or widget
+      placeholder: Get-LockedOutUser.ps1
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you ran, what you expected, and what happened instead. Paste errors as text.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OpsKit version, PowerShell version and OS.
+      placeholder: OpsKit 0.1.0, PowerShell 7.4.6, Windows Server 2022

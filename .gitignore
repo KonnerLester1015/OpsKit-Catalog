@@ -1,0 +1,6 @@
+# Build output (./build/Build-Catalog.ps1 -OutputPath site)
+/site/
+
+# Pester output
+testResults.xml
+coverage.xml

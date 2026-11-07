@@ -1,0 +1,66 @@
+name: Validate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the pull request
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # Packages are judged by the build script and rules from the base branch, so a pull
+      # request can't weaken the checks it is validated with. Changes to build/ itself are
+      # covered by the Pester tests below and by maintainer review.
+      - name: Check out the base branch build
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .base
+          persist-credentials: false
+
+      - name: Install PowerShell modules
+        shell: pwsh
+        run: |
+          Set-PSResourceRepository -Name PSGallery -Trusted
+          Install-PSResource -Name PSScriptAnalyzer -Version 1.25.0 -Scope CurrentUser
+          Install-PSResource -Name Pester -Version 5.7.1 -Scope CurrentUser
+
+      - name: Validate packages
+        shell: pwsh
+        env:
+          OVERRIDE_APPROVED: ${{ contains(github.event.pull_request.labels.*.name, 'override-approved') }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          $build = if (Test-Path ./.base/build/Build-Catalog.ps1) { './.base/build/Build-Catalog.ps1' } else { './build/Build-Catalog.ps1' }
+          $params = @{
+              PackagesPath = './packages'
+              OutputPath   = "$env:RUNNER_TEMP/site"
+              BaseRef      = $env:BASE_SHA
+          }
+          # Banned-pattern overrides fail until a maintainer adds the override-approved label.
+          if ($env:OVERRIDE_APPROVED -ne 'true') { $params.RequireOverrideApproval = $true }
+          & $build @params
+
+      - name: Test the build script
+        if: success() || failure()
+        shell: pwsh
+        run: |
+          $config = New-PesterConfiguration
+          $config.Run.Path = './tests'
+          $config.Run.Exit = $true
+          $config.Output.Verbosity = 'Detailed'
+          Invoke-Pester -Configuration $config

@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KonnerLester1015/OpsKit-Catalog/blob/main/schema/catalog.schema.json",
+  "title": "OpsKit Catalog",
+  "description": "catalog.json published by the OpsKit Catalog. schemaVersion changes only on breaking changes; new optional fields can be added within a version, so clients must ignore fields they don't know.",
+  "type": "object",
+  "required": ["schemaVersion", "generated", "catalogUrl", "packages"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generated": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$" },
+    "catalogUrl": { "$ref": "#/$defs/absoluteUrl" },
+    "categories": {
+      "description": "Every category a package may use, in display order.",
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "packages": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/package" }
+    }
+  },
+  "$defs": {
+    "absoluteUrl": { "type": "string", "format": "uri", "pattern": "^https?://" },
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "stringList": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "platforms": {
+      "description": "Supported platforms. Empty means every platform.",
+      "type": "array",
+      "items": { "enum": ["Windows", "Linux", "macOS"] },
+      "uniqueItems": true
+    },
+    "package": {
+      "type": "object",
+      "required": [
+        "id", "name", "description", "version", "author", "category", "tags", "requiresModules",
+        "minOpsKitVersion", "updated", "download", "sourceUrl", "files", "scripts", "widgets"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "version": { "$ref": "#/$defs/semver" },
+        "author": { "type": "string", "minLength": 1 },
+        "category": { "type": "string", "minLength": 1 },
+        "tags": { "$ref": "#/$defs/stringList" },
+        "requiresModules": { "$ref": "#/$defs/stringList" },
+        "minOpsKitVersion": { "$ref": "#/$defs/semver" },
+        "updated": { "type": "string", "format": "date", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "download": {
+          "type": "object",
+          "required": ["url", "sha256", "size"],
+          "properties": {
+            "url": { "$ref": "#/$defs/absoluteUrl" },
+            "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "size": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "sourceUrl": { "$ref": "#/$defs/absoluteUrl" },
+        "readmeUrl": {
+          "description": "Raw README.md, when the package has one.",
+          "$ref": "#/$defs/absoluteUrl"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "url"],
+            "properties": {
+              "path": { "type": "string", "pattern": "^[^/\\\\][^\\\\]*$" },
+              "url": { "$ref": "#/$defs/absoluteUrl" },
+              "size": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "scripts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "description", "requiresAdmin", "platforms", "parameters"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*/[A-Za-z]+-[A-Za-z0-9]+$" },
+              "file": { "type": "string" },
+              "name": { "type": "string", "minLength": 1 },
+              "description": { "type": "string", "minLength": 1 },
+              "version": { "$ref": "#/$defs/semver" },
+              "requiresAdmin": { "type": "boolean" },
+              "requiresModules": { "$ref": "#/$defs/stringList" },
+              "platforms": { "$ref": "#/$defs/platforms" },
+              "parameters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "type", "mandatory"],
+                  "properties": {
+                    "name": { "type": "string", "minLength": 1 },
+                    "type": { "type": "string", "minLength": 1 },
+                    "mandatory": { "type": "boolean" },
+                    "helpMessage": { "type": ["string", "null"] },
+                    "validateSet": { "$ref": "#/$defs/stringList" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "widgets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "description"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*/[A-Za-z0-9]+$" },
+              "file": { "type": "string" },
+              "name": { "type": "string", "minLength": 1 },
+              "description": { "type": "string", "minLength": 1 },
+              "requiresModules": { "$ref": "#/$defs/stringList" },
+              "platforms": { "$ref": "#/$defs/platforms" },
+              "refreshSeconds": { "type": ["integer", "null"], "minimum": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

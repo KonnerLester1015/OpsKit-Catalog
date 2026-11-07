@@ -1,0 +1,44 @@
+name: Package request
+description: Ask for a script or package that doesn't exist yet.
+title: "[Request] "
+labels: ["package-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check [IDEAS.md](https://github.com/KonnerLester1015/OpsKit-Catalog/blob/main/IDEAS.md) first. Your idea may already be on the list, waiting for an author.
+  - type: textarea
+    id: what
+    attributes:
+      label: What should it do?
+      description: The task, and what the output should look like.
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Active Directory
+        - Microsoft 365 / Entra ID
+        - Windows
+        - Networking
+        - Virtualization
+        - Security
+        - Backup
+        - Service Management
+        - Reporting
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: modules
+    attributes:
+      label: PowerShell modules it would need
+      placeholder: ActiveDirectory, Microsoft.Graph.Users
+  - type: checkboxes
+    id: author
+    attributes:
+      label: Writing it yourself?
+      options:
+        - label: I'd like to write this package myself.

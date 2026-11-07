@@ -1,0 +1,15 @@
+{
+  "$comment": "Package categories. Maintainers may append new ones; renaming or removing a category breaks packages that use it.",
+  "categories": [
+    "Active Directory",
+    "Microsoft 365 / Entra ID",
+    "Windows",
+    "Networking",
+    "Virtualization",
+    "Security",
+    "Backup",
+    "Service Management",
+    "Reporting",
+    "Other"
+  ]
+}

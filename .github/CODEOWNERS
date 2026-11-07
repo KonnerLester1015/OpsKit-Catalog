@@ -1,0 +1,7 @@
+# A maintainer must review every change to packages and to anything that decides what passes.
+# This takes effect once branch protection on main requires review from code owners.
+*            @KonnerLester1015
+/packages/   @KonnerLester1015
+/build/      @KonnerLester1015
+/schema/     @KonnerLester1015
+/.github/    @KonnerLester1015
