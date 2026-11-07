@@ -94,7 +94,7 @@
 
 /* Base */
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 16px; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 16px; scrollbar-gutter: stable; }
 body {
   margin: 0;
   background: var(--bg);
@@ -303,7 +303,7 @@ pre { margin: 0; }
 .pkg-aside { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; min-width: 0; }
 .pkg-main { min-width: 0; }
 @media (max-width: 900px) { .pkg-layout { grid-template-columns: minmax(0, 1fr); } .pkg-aside { order: -1; } }
-.loading-block { min-height: 70vh; }
+.loading-block { min-height: 100vh; }
 
 .install-step { margin: 0 0 14px; }
 .install-step h3 { font-size: .95rem; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
