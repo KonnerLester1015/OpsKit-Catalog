@@ -33,8 +33,7 @@ jobs:
       - name: Install PowerShell modules
         shell: pwsh
         run: |
-          Set-PSResourceRepository -Name PSGallery -Trusted
-          Install-PSResource -Name PSScriptAnalyzer -Version 1.25.0 -Scope CurrentUser
+          Install-PSResource -Name PSScriptAnalyzer -Version 1.25.0 -Scope CurrentUser -TrustRepository
 
       - name: Build catalog and site
         shell: pwsh

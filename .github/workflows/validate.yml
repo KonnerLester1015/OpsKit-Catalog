@@ -35,9 +35,8 @@ jobs:
       - name: Install PowerShell modules
         shell: pwsh
         run: |
-          Set-PSResourceRepository -Name PSGallery -Trusted
-          Install-PSResource -Name PSScriptAnalyzer -Version 1.25.0 -Scope CurrentUser
-          Install-PSResource -Name Pester -Version 5.7.1 -Scope CurrentUser
+          Install-PSResource -Name PSScriptAnalyzer -Version 1.25.0 -Scope CurrentUser -TrustRepository
+          Install-PSResource -Name Pester -Version 5.7.1 -Scope CurrentUser -TrustRepository
 
       - name: Validate packages
         shell: pwsh
