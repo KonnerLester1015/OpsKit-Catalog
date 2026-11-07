@@ -176,33 +176,6 @@ Fields added on top of the original spec, all optional for clients: top-level `c
 `files[].size`; script `file`, `version`, `requiresModules`; parameter `validateSet`; widget `file`,
 `requiresModules`, `platforms`, `refreshSeconds`.
 
-## Maintaining the catalog
-
-### Enabling GitHub Pages
-
-1. In the repository, go to **Settings › Pages**.
-2. Under **Build and deployment › Source**, choose **GitHub Actions**.
-3. Push to `main` (or run the **Deploy** workflow by hand). The site appears at
-   `https://<owner>.github.io/<repo>/`.
-
-### Requiring maintainer review
-
-[`.github/CODEOWNERS`](.github/CODEOWNERS) names the maintainers for `packages/`, `build/`, `schema/` and
-`.github/`. To enforce it, add a branch protection rule or ruleset for `main` (**Settings › Rules**) that
-requires a pull request, requires review from code owners, and requires the **Validate packages** check.
-
-### Labels
-
-- `override-approved`: a maintainer has reviewed the banned-pattern overrides in a pull request. Adding it
-  re-runs validation with overrides allowed.
-
-### Changing the rules
-
-Categories live in [`build/categories.json`](build/categories.json); banned patterns, limits and analyzer
-exclusions in [`build/rules.psd1`](build/rules.psd1). Change them in their own pull request, with a test in
-[`tests/`](tests/), and merge that before any package that depends on it, because pull requests are validated
-with the rules from `main`.
-
 ## Licence
 
 [MIT](LICENSE). By contributing a package you agree to license it under MIT.
