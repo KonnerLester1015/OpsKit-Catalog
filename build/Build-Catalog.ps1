@@ -509,23 +509,30 @@ foreach ($item in Get-ChildItem -LiteralPath $PackagesPath -Force | Sort-Object 
             'NotPlain' { Add-Issue -Package $id -File $manifestDisplay -Rule 'ManifestNotPlain' -Message $data.Message }
             'Ok' {
                 $m = $data.Value
-                $missing = @($Rules.ManifestFields | Where-Object { -not $m.ContainsKey($_) })
-                foreach ($field in $missing) { Add-Issue -Package $id -File $manifestDisplay -Rule 'ManifestFieldMissing' -Message "module.psd1 is missing the required field '$field'." }
-                foreach ($key in $m.Keys) {
-                    if ($key -notin $Rules.ManifestFields) { Add-Issue -Severity Warning -Package $id -File $manifestDisplay -Rule 'ManifestFieldUnknown' -Message "module.psd1 has an unknown field '$key'." }
+                # Line of each key, so errors point at the right line.
+                $keyLine = @{}
+                $lineNumber = 0
+                foreach ($text in [IO.File]::ReadAllLines($manifestPath)) {
+                    $lineNumber++
+                    if ($text -match '^\s*([A-Za-z]+)\s*=' -and -not $keyLine.ContainsKey($Matches[1])) { $keyLine[$Matches[1]] = $lineNumber }
                 }
-                $invalid = { param($field, $why) Add-Issue -Package $id -File $manifestDisplay -Rule 'ManifestFieldInvalid' -Message "$field $why" }
+                $missing = @($Rules.ManifestFields | Where-Object { -not $m.ContainsKey($_) })
+                foreach ($field in $missing) { Add-Issue -Package $id -File $manifestDisplay -Line 1 -Rule 'ManifestFieldMissing' -Message "module.psd1 is missing the required field '$field'." }
+                foreach ($key in $m.Keys) {
+                    if ($key -notin $Rules.ManifestFields) { Add-Issue -Severity Warning -Package $id -File $manifestDisplay -Line $keyLine[$key] -Rule 'ManifestFieldUnknown' -Message "module.psd1 has an unknown field '$key'." }
+                }
+                $invalid = { param($field, $why) Add-Issue -Package $id -File $manifestDisplay -Line $keyLine[$field] -Rule 'ManifestFieldInvalid' -Message "$field $why" }
                 if ($m.ContainsKey('Name') -and ($m.Name -isnot [string] -or -not (Test-SingleLine $m.Name 60))) { & $invalid 'Name' 'must be a single line of text, at most 60 characters.' }
                 if ($m.ContainsKey('Description') -and ($m.Description -isnot [string] -or -not (Test-SingleLine $m.Description 200))) { & $invalid 'Description' 'must be one line of text, at most 200 characters.' }
                 if ($m.ContainsKey('Author') -and ($m.Author -isnot [string] -or $m.Author -notmatch '^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$')) { & $invalid 'Author' "must be a GitHub username (found '$($m.Author)')." }
                 if ($m.ContainsKey('Version') -and ($m.Version -isnot [string] -or $m.Version -notmatch $SemVerPattern)) {
-                    Add-Issue -Package $id -File $manifestDisplay -Rule 'InvalidVersion' -Message "Version '$($m.Version)' is not a semantic version. Use MAJOR.MINOR.PATCH, for example '1.0.0'."
+                    Add-Issue -Package $id -File $manifestDisplay -Line $keyLine['Version'] -Rule 'InvalidVersion' -Message "Version '$($m.Version)' is not a semantic version. Use MAJOR.MINOR.PATCH, for example '1.0.0'."
                 }
                 if ($m.ContainsKey('MinOpsKitVersion') -and ($m.MinOpsKitVersion -isnot [string] -or $m.MinOpsKitVersion -notmatch $SemVerPattern)) {
-                    Add-Issue -Package $id -File $manifestDisplay -Rule 'InvalidVersion' -Message "MinOpsKitVersion '$($m.MinOpsKitVersion)' is not a semantic version, for example '0.1.0'."
+                    Add-Issue -Package $id -File $manifestDisplay -Line $keyLine['MinOpsKitVersion'] -Rule 'InvalidVersion' -Message "MinOpsKitVersion '$($m.MinOpsKitVersion)' is not a semantic version, for example '0.1.0'."
                 }
                 if ($m.ContainsKey('Category') -and $m.Category -cnotin $Categories) {
-                    Add-Issue -Package $id -File $manifestDisplay -Rule 'InvalidCategory' -Message "Category '$($m.Category)' is not in build/categories.json. Use one of: $($Categories -join ', ')."
+                    Add-Issue -Package $id -File $manifestDisplay -Line $keyLine['Category'] -Rule 'InvalidCategory' -Message "Category '$($m.Category)' is not in build/categories.json. Use one of: $($Categories -join ', ')."
                 }
                 foreach ($field in 'Tags', 'RequiresModules') {
                     if ($m.ContainsKey($field) -and -not (Test-StringList $m[$field])) { & $invalid $field "must be an array of strings: @('a', 'b')." }
@@ -655,7 +662,7 @@ foreach ($item in Get-ChildItem -LiteralPath $PackagesPath -Force | Sort-Object 
                 $oldData = Read-DataFile -Text ($old.Output -join "`n")
                 if ($oldData.Status -eq 'Ok' -and $oldData.Value['Version'] -match $SemVerPattern -and
                     [semver]$pkg.Manifest.Version -le [semver]$oldData.Value['Version']) {
-                    Add-Issue -Package $id -File $manifestDisplay -Rule 'VersionNotBumped' `
+                    Add-Issue -Package $id -File $manifestDisplay -Line $keyLine['Version'] -Rule 'VersionNotBumped' `
                         -Message "Files changed compared with $BaseRef, but Version is $($pkg.Manifest.Version) (was $($oldData.Value['Version'])). Bump Version in module.psd1."
                 }
             }

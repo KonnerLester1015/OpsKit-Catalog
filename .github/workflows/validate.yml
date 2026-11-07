@@ -61,5 +61,6 @@ jobs:
           $config = New-PesterConfiguration
           $config.Run.Path = './tests'
           $config.Run.Exit = $true
+          $config.Filter.ExcludeTag = 'Packages'   # the step above already validated packages/
           $config.Output.Verbosity = 'Detailed'
           Invoke-Pester -Configuration $config

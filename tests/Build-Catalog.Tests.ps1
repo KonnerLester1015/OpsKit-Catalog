@@ -31,7 +31,8 @@ AfterAll {
     $env:GITHUB_STEP_SUMMARY = $script:SavedEnv.GITHUB_STEP_SUMMARY
 }
 
-Describe 'Seed packages' {
+# Checks the real packages/ folder. CI covers this in its own step, so the Pester step there excludes this tag.
+Describe 'Seed packages' -Tag 'Packages' {
     It 'all pass validation, including PSScriptAnalyzer' {
         $result = Invoke-Build -PackagesPath (Join-Path $RepoRoot 'packages')
         $result.Errors | ForEach-Object { "$($_.File):$($_.Line) [$($_.Rule)] $($_.Message)" } | Should -BeNullOrEmpty
@@ -75,6 +76,11 @@ Describe 'Bad packages are rejected' {
         $result.Success | Should -BeFalse
         $result.Errors.Rule | Should -Contain $Rule
         $LASTEXITCODE | Should -Be 1
+    }
+
+    It 'points module.psd1 errors at the right line' {
+        $result = Invoke-Build -PackagesPath (Join-Path $Fixtures 'bad' 'BadCategory') -SkipAnalyzer
+        ($result.Errors | Where-Object Rule -eq 'InvalidCategory').Line | Should -Be 6
     }
 
     It 'rejects files with binary content' {
@@ -165,10 +171,12 @@ Describe 'Site build' {
     BeforeAll {
         $baseUrl = 'https://example.test/catalog/'
         $site = Join-Path $TestDrive 'site'
+        # Fixtures only, so this test doesn't depend on the state of packages/.
         $packages = Join-Path $TestDrive 'site-packages'
         $null = New-Item -ItemType Directory -Path $packages
-        Copy-Item -Path (Join-Path $RepoRoot 'packages' '*') -Destination $packages -Recurse
         Copy-Item -LiteralPath (Join-Path $Fixtures 'good' 'GoodPackage') -Destination (Join-Path $packages 'GoodPackage') -Recurse
+        Copy-Item -LiteralPath (Join-Path $RepoRoot 'templates' 'package') -Destination (Join-Path $packages 'MyPackage') -Recurse
+        Rename-Item -LiteralPath (Join-Path $packages 'MyPackage' 'Script.ps1') -NewName 'Get-LowDiskSpace.ps1'
         $result = & $BuildScript -PackagesPath $packages -OutputPath $site -BaseUrl $baseUrl -RepoUrl 'https://github.com/octocat/opskit-catalog' -SummaryPath '' -SkipAnalyzer -PassThru 6>$null
         $catalogText = Get-Content (Join-Path $site 'catalog.json') -Raw
         $catalog = $catalogText | ConvertFrom-Json
