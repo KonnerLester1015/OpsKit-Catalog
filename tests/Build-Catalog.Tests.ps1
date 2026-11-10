@@ -244,8 +244,11 @@ Describe 'Site build' {
 
     It 'fills in the placeholders in the pages' {
         foreach ($page in Get-ChildItem $site -Filter *.html) {
-            Get-Content $page.FullName -Raw | Should -Not -Match '\{\{[A-Z_]+\}\}'
+            Get-Content $page.FullName -Raw | Should -Not -Match '\{\{[A-Z_]+(:[a-z]+)?\}\}'
         }
+        Join-Path $site '_partials' | Should -Not -Exist
+        Get-Content (Join-Path $site 'browse.html') -Raw | Should -Match '<a href="browse.html" aria-current="page">Browse</a>'
+        Get-Content (Join-Path $site 'index.html') -Raw | Should -Not -Match 'aria-current'
         Join-Path $site 'downloads' 'opskit-package-template.zip' | Should -Exist
     }
 

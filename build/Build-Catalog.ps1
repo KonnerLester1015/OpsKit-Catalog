@@ -834,12 +834,30 @@ if (-not $ValidateOnly -and -not $errorList.Count) {
         '{{IDEAS_URL}}'  = "$RepoUrl/blob/$Branch/IDEAS.md"
         '{{BRANCH}}'     = $Branch
     }
+    # Shared header and footer. A page writes {{HEADER:browse}} to mark Browse as the current nav item,
+    # or {{HEADER}} for none, and {{FOOTER}}. Partials are not copied to the output.
+    $partials = @{}
+    foreach ($p in Get-ChildItem -LiteralPath (Join-Path $siteSrc '_partials') -Filter *.html -File) {
+        $partials[$p.BaseName] = [IO.File]::ReadAllText($p.FullName).TrimEnd()
+    }
+    $headerFor = {
+        param($match)
+        $page = $match.Groups[1].Value
+        $html = $partials['header']
+        foreach ($nav in 'BROWSE', 'SUBMIT', 'ABOUT') {
+            $html = $html.Replace("{{NAV_$nav}}", $(if ($page -eq $nav) { ' aria-current="page"' } else { '' }))
+        }
+        $html
+    }
     foreach ($file in Get-ChildItem -LiteralPath $siteSrc -Recurse -File) {
         $relative = [IO.Path]::GetRelativePath($siteSrc, $file.FullName)
+        if ($relative -like '_partials*') { continue }
         $target = Join-Path $OutputPath $relative
         $null = New-Item -ItemType Directory -Path (Split-Path $target) -Force
         if ($file.Extension -in '.html', '.txt', '.xml', '.webmanifest') {
             $text = [IO.File]::ReadAllText($file.FullName)
+            $text = [regex]::Replace($text, '\{\{HEADER(?::([a-z]+))?\}\}', [Text.RegularExpressions.MatchEvaluator]$headerFor)
+            $text = $text.Replace('{{FOOTER}}', $partials['footer'])
             foreach ($key in $tokens.Keys) { $text = $text.Replace($key, $tokens[$key]) }
             [IO.File]::WriteAllText($target, $text, $Utf8NoBom)
         }

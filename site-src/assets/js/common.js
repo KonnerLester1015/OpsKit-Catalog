@@ -112,6 +112,79 @@ export function moduleBadges(pkg) {
   return allModules(pkg).map((m) => el('span', { class: 'badge', title: 'Required PowerShell module' }, m));
 }
 
+// ---------- Package lists (home and browse) ----------
+
+export function packageUrl(pkg) {
+  return `package.html?id=${encodeURIComponent(pkg.id)}`;
+}
+
+/** Two or three characters for the package tile: digits if the id has them (Microsoft365 → 365), else its capitals. */
+export function monogram(pkg) {
+  const digits = pkg.id.match(/\d+/);
+  if (digits) return digits[0].slice(0, 3);
+  const caps = pkg.id.replace(/[^A-Z]/g, '');
+  return (caps.length >= 2 ? caps : pkg.id).slice(0, 2).toUpperCase();
+}
+
+const SHORT_CATEGORIES = { 'Active Directory': 'AD', 'Microsoft 365 / Entra ID': 'M365', 'Service Management': 'ITSM' };
+export function shortCategory(category) {
+  return SHORT_CATEGORIES[category] || category;
+}
+
+export function countsText(pkg) {
+  const parts = [plural(pkg.scripts.length, 'script')];
+  if (pkg.widgets.length) parts.push(plural(pkg.widgets.length, 'widget'));
+  return parts.join(' · ');
+}
+
+/** Lower-case text that search terms are matched against. */
+export function haystack(pkg) {
+  return [
+    pkg.id, pkg.name, pkg.description, pkg.category, ...pkg.tags,
+    ...pkg.scripts.flatMap((s) => [s.name, s.id.split('/')[1], s.description]),
+    ...pkg.widgets.map((w) => w.name),
+  ].join(' ').toLowerCase();
+}
+
+/** filters: { q, category, platform: ''|'windows'|'cross', admin: ''|'yes'|'no' }. pkg._search comes from haystack(). */
+export function matchesFilters(pkg, filters) {
+  if (filters.category && pkg.category !== filters.category) return false;
+  if (filters.platform === 'windows' && isCrossPlatform(pkg)) return false;
+  if (filters.platform === 'cross' && !isCrossPlatform(pkg)) return false;
+  if (filters.admin === 'yes' && !needsAdmin(pkg)) return false;
+  if (filters.admin === 'no' && needsAdmin(pkg)) return false;
+  const terms = (filters.q || '').toLowerCase().split(/\s+/).filter(Boolean);
+  return terms.every((term) => pkg._search.includes(term));
+}
+
+/** Loads the catalog and returns its packages sorted by name, ready for matchesFilters. */
+export async function loadPackages() {
+  const catalog = await loadCatalog();
+  const packages = catalog.packages
+    .map((pkg) => Object.assign(pkg, { _search: haystack(pkg) }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  return { catalog, packages };
+}
+
+/** Categories in catalog order that at least one package uses, with counts. */
+export function usedCategories(catalog, packages) {
+  const used = new Map();
+  for (const pkg of packages) used.set(pkg.category, (used.get(pkg.category) || 0) + 1);
+  const order = (catalog.categories || []).filter((c) => used.has(c));
+  for (const c of used.keys()) if (!order.includes(c)) order.push(c);
+  return order.map((name) => ({ name, count: used.get(name) }));
+}
+
+/** "/" focuses the search box, like in OpsKit. */
+export function focusOnSlash(input) {
+  document.addEventListener('keydown', (event) => {
+    if (event.key === '/' && !event.ctrlKey && !event.metaKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
+      event.preventDefault();
+      input.focus();
+    }
+  });
+}
+
 export async function copyText(text, button) {
   try {
     await navigator.clipboard.writeText(text);

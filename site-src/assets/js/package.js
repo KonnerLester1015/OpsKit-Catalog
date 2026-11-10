@@ -51,10 +51,21 @@ function platformText(item) {
 
 // ---------- Header ----------
 
+function zipFileName(pkg) {
+  return pkg.download.url.split('/').pop();
+}
+
 function header(pkg) {
-  const badges = [el('span', { class: 'badge accent' }, pkg.category), ...allModules(pkg).map((m) => el('span', { class: 'badge', title: 'Required PowerShell module' }, m))];
+  // Modules are listed under Requirements, so the header keeps only the badges that change who can use it.
+  const badges = [el('span', { class: 'badge accent' }, pkg.category)];
   if (needsAdmin(pkg)) badges.push(el('span', { class: 'badge warning' }, 'admin'));
   if (!isCrossPlatform(pkg)) badges.push(el('span', { class: 'badge' }, 'Windows'));
+
+  const download = el('div', { class: 'pkg-download' },
+    el('a', { class: 'button', href: pkg.download.url, download: zipFileName(pkg) },
+      icon('download'), 'Download zip', el('span', { class: 'button-meta' }, formatBytes(pkg.download.size))),
+    el('p', { class: 'pkg-warning' }, icon('warning'),
+      el('span', {}, 'Runs with your permissions. ', el('a', { href: '#h-source' }, 'Read the code'), ' first.')));
 
   return el('header', { class: 'pkg-header' },
     el('div', {},
@@ -65,27 +76,25 @@ function header(pkg) {
         el('li', {}, 'Version ', el('strong', { class: 'mono' }, pkg.version)),
         el('li', {}, 'Updated ', el('strong', {}, el('time', { datetime: pkg.updated }, pkg.updated))),
         el('li', {}, 'Id ', el('strong', { class: 'mono' }, pkg.id))),
-      el('div', { class: 'badges' }, badges)));
+      el('div', { class: 'badges' }, badges)),
+    download);
 }
 
 // ---------- Aside: install, requirements, links ----------
 
 function installPanel(pkg) {
-  const zipName = pkg.download.url.split('/').pop();
-  const menuPath = `Catalog › ${pkg.name} › Install`;
+  const zipName = zipFileName(pkg);
   const script = [
+    `$dest = 'C:\\path\\to\\OpsKit\\Custom'   # your OpsKit Custom folder`,
     `$zip = Join-Path ([IO.Path]::GetTempPath()) '${zipName}'`,
     `Invoke-WebRequest -Uri '${pkg.download.url}' -OutFile $zip`,
     `if ((Get-FileHash $zip -Algorithm SHA256).Hash -ne '${pkg.download.sha256}') { throw 'Checksum mismatch' }`,
-    `Expand-Archive -Path $zip -DestinationPath 'C:\\path\\to\\OpsKit\\Custom' -Force`,
+    `Expand-Archive -Path $zip -DestinationPath $dest -Force`,
   ].join('\n');
 
   return panel('Install',
     el('div', { class: 'install-step' },
-      el('h3', {}, 'In OpsKit', el('span', { class: 'badge' }, 'coming soon')),
-      el('div', { class: 'copy-row' }, el('code', {}, menuPath), copyButton(menuPath, 'Copy', 'OpsKit menu path'))),
-    el('div', { class: 'install-step' },
-      el('h3', {}, 'Manual'),
+      el('h3', {}, 'By hand'),
       el('ol', {},
         el('li', {}, el('a', { href: pkg.download.url, download: zipName }, `Download ${zipName}`), ` (${formatBytes(pkg.download.size)})`),
         el('li', {}, 'Extract it into the OpsKit ', el('code', {}, 'Custom/'), ' folder, so you get ', el('code', {}, `Custom/${pkg.id}/module.psd1`), '.'),
@@ -93,7 +102,7 @@ function installPanel(pkg) {
       el('p', { class: 'hash' }, 'SHA-256: ', pkg.download.sha256, ' ', copyButton(pkg.download.sha256, 'Copy', 'SHA-256 checksum'))),
     el('div', { class: 'install-step' },
       el('h3', {}, 'Or with PowerShell'),
-      el('p', { class: 'muted' }, 'Downloads, checks the hash and extracts. Change the destination folder first.'),
+      el('p', { class: 'muted' }, 'Downloads, checks the hash and extracts. Set $dest on the first line before you run it.'),
       el('div', { class: 'copy-row' }, el('pre', { tabindex: '0', 'aria-label': 'PowerShell install commands' }, script), copyButton(script, 'Copy', 'install commands'))));
 }
 
@@ -117,13 +126,7 @@ function linksPanel(pkg) {
   return panel('Links',
     el('ul', { class: 'link-list' },
       el('li', {}, el('a', { href: pkg.sourceUrl }, 'View on GitHub')),
-      el('li', {}, el('a', { href: issue.href }, 'Report a problem')),
-      el('li', {}, el('a', { href: pkg.download.url }, 'Download zip'))));
-}
-
-function notice() {
-  return el('div', { class: 'notice', role: 'note' }, icon('warning'),
-    el('p', { class: 'notice-text' }, el('strong', {}, 'Community scripts run with your permissions. '), 'Read the code before running it.'));
+      el('li', {}, el('a', { href: issue.href }, 'Report a problem'))));
 }
 
 // ---------- Main column ----------
@@ -322,7 +325,7 @@ function render(pkg) {
     el('div', { class: 'pkg-layout' },
       el('div', { class: 'pkg-main' }, main),
       el('aside', { class: 'pkg-aside', 'aria-label': 'Install and details' },
-        notice(), installPanel(pkg), requirementsPanel(pkg), linksPanel(pkg))));
+        installPanel(pkg), requirementsPanel(pkg), linksPanel(pkg))));
   root.classList.remove('loading-block');
   root.setAttribute('aria-busy', 'false');
 }
@@ -333,7 +336,7 @@ function notFound(message) {
   root.replaceChildren(
     el('h1', {}, 'Package not found'),
     el('p', {}, message),
-    el('p', {}, el('a', { class: 'button', href: './' }, 'Browse all packages')));
+    el('p', {}, el('a', { class: 'button', href: 'browse.html' }, 'Browse all packages')));
   root.classList.remove('loading-block');
   root.setAttribute('aria-busy', 'false');
   announce('Package not found');

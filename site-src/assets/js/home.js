@@ -1,125 +1,78 @@
-import { loadCatalog, el, plural, isCrossPlatform, needsAdmin, moduleBadges, announce } from './common.js';
+import {
+  el, plural, announce, copyText, loadPackages, usedCategories, matchesFilters, monogram, countsText, shortCategory, packageUrl, focusOnSlash,
+} from './common.js';
 
-const form = document.getElementById('filters');
+// Filter links used to point at the home page. The full filters live on browse.html now.
+if (/[?&](q|category|platform|admin)=/.test(location.search)) location.replace(`browse.html${location.search}`);
+
+const LIMIT = 5;
+const form = document.getElementById('finder-form');
 const input = document.getElementById('q');
 const chipBox = document.getElementById('category-chips');
-const platformSelect = document.getElementById('platform');
-const adminSelect = document.getElementById('admin');
-const resetButton = document.getElementById('reset');
-const grid = document.getElementById('grid');
-const count = document.getElementById('result-count');
+const list = document.getElementById('finder-list');
+const more = document.getElementById('finder-more');
 
-const state = { q: '', category: '', platform: '', admin: '' };
+const state = { q: '', category: '' };
 let packages = [];
 
-function readUrl() {
-  const params = new URLSearchParams(location.search);
-  state.q = params.get('q') || '';
-  state.category = params.get('category') || '';
-  state.platform = ['windows', 'cross'].includes(params.get('platform')) ? params.get('platform') : '';
-  state.admin = ['yes', 'no'].includes(params.get('admin')) ? params.get('admin') : '';
-  input.value = state.q;
-  platformSelect.value = state.platform;
-  adminSelect.value = state.admin;
-}
-
-function writeUrl() {
+function browseHref() {
   const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(state)) if (value) params.set(key, value);
+  if (state.q) params.set('q', state.q);
+  if (state.category) params.set('category', state.category);
   const query = params.toString();
-  history.replaceState(null, '', query ? `?${query}` : location.pathname);
+  return query ? `browse.html?${query}` : 'browse.html';
 }
 
-function haystack(pkg) {
-  return [
-    pkg.id, pkg.name, pkg.description, pkg.category, ...pkg.tags,
-    ...pkg.scripts.flatMap((s) => [s.name, s.id.split('/')[1], s.description]),
-    ...pkg.widgets.map((w) => w.name),
-  ].join(' ').toLowerCase();
-}
-
-function matches(pkg) {
-  if (state.category && pkg.category !== state.category) return false;
-  if (state.platform === 'windows' && isCrossPlatform(pkg)) return false;
-  if (state.platform === 'cross' && !isCrossPlatform(pkg)) return false;
-  if (state.admin === 'yes' && !needsAdmin(pkg)) return false;
-  if (state.admin === 'no' && needsAdmin(pkg)) return false;
-  const terms = state.q.toLowerCase().split(/\s+/).filter(Boolean);
-  return terms.every((term) => pkg._search.includes(term));
-}
-
-function card(pkg) {
-  const badges = [...moduleBadges(pkg)];
-  if (needsAdmin(pkg)) badges.push(el('span', { class: 'badge warning', title: 'At least one script needs to run as administrator' }, 'admin'));
-  if (!isCrossPlatform(pkg)) badges.push(el('span', { class: 'badge', title: 'Some scripts only run on Windows' }, 'Windows'));
-
-  const counts = [plural(pkg.scripts.length, 'script')];
-  if (pkg.widgets.length) counts.push(plural(pkg.widgets.length, 'widget'));
-
-  return el('article', { class: 'card' },
-    el('div', {},
-      el('h3', {}, el('a', { href: `package.html?id=${encodeURIComponent(pkg.id)}` }, pkg.name)),
-      el('div', { class: 'id' }, pkg.id)),
-    el('p', { class: 'desc' }, pkg.description),
-    el('div', { class: 'meta' },
-      el('span', { class: 'badge accent' }, pkg.category),
-      el('span', { class: 'mono' }, `v${pkg.version}`),
-      el('span', { class: 'sep', 'aria-hidden': 'true' }, '·'),
-      el('span', {}, counts.join(' · '))),
-    badges.length ? el('div', { class: 'badges' }, badges) : null);
-}
-
-function renderChips(catalog) {
-  const used = new Map();
-  for (const pkg of packages) used.set(pkg.category, (used.get(pkg.category) || 0) + 1);
-  const order = (catalog.categories || []).filter((c) => used.has(c));
-  for (const c of used.keys()) if (!order.includes(c)) order.push(c);
-
-  const chip = (value, label, n) => el('button', {
-    type: 'button',
-    class: 'chip',
-    'aria-pressed': String(state.category === value),
-    dataset: { category: value },
-    onclick: () => { state.category = state.category === value && value ? '' : value; update(); },
-  }, label, n === undefined ? null : el('span', { class: 'count' }, ` ${n}`));
-
-  chipBox.replaceChildren(chip('', 'All', packages.length), ...order.map((c) => chip(c, c, used.get(c))));
+function row(pkg) {
+  return el('li', {},
+    el('a', { class: 'mini-row', href: packageUrl(pkg) },
+      el('span', { class: 'tile', 'aria-hidden': 'true' }, monogram(pkg)),
+      el('span', { class: 'mini-text' },
+        el('span', { class: 'mini-name' }, pkg.name),
+        el('span', { class: 'mini-desc' }, pkg.description)),
+      el('span', { class: 'mini-counts' }, countsText(pkg))));
 }
 
 function render() {
   for (const button of chipBox.querySelectorAll('.chip')) {
     button.setAttribute('aria-pressed', String(button.dataset.category === state.category));
   }
-  const shown = packages.filter(matches);
-  grid.setAttribute('aria-busy', 'false');
-  if (shown.length) {
-    grid.replaceChildren(...shown.map(card));
-  } else {
-    grid.replaceChildren(el('div', { class: 'empty' },
-      el('p', {}, 'No packages match these filters.'),
-      el('button', { type: 'button', class: 'button secondary small', onclick: clearFilters }, 'Clear filters')));
-  }
-  const filtered = Object.values(state).some(Boolean);
-  count.textContent = filtered ? `Showing ${shown.length} of ${plural(packages.length, 'package')}` : plural(packages.length, 'package');
-  resetButton.hidden = !filtered;
+  const shown = packages.filter((pkg) => matchesFilters(pkg, state));
+  list.setAttribute('aria-busy', 'false');
+  list.replaceChildren(...(shown.length
+    ? shown.slice(0, LIMIT).map(row)
+    : [el('li', { class: 'finder-empty' }, 'No packages match.')]));
+
+  const filtered = Boolean(state.q || state.category);
+  more.href = browseHref();
+  more.firstElementChild.textContent = filtered
+    ? `See ${shown.length === 1 ? 'the 1 match' : `all ${shown.length} matches`} in Browse`
+    : `Browse all ${plural(packages.length, 'package')}`;
+  more.hidden = filtered && shown.length === 0;
   return shown.length;
 }
 
 let announceTimer;
 function update() {
-  writeUrl();
   const n = render();
   clearTimeout(announceTimer);
   announceTimer = setTimeout(() => announce(`${plural(n, 'package')} found`), 600);
 }
 
-function clearFilters() {
-  Object.assign(state, { q: '', category: '', platform: '', admin: '' });
-  input.value = '';
-  platformSelect.value = '';
-  adminSelect.value = '';
-  update();
-  input.focus();
+function renderChips(catalog) {
+  const chip = (value, label, n, fullName) => el('button', {
+    type: 'button',
+    class: 'chip',
+    title: fullName,
+    'aria-label': fullName ? `${fullName}, ${n}` : null,
+    'aria-pressed': 'false',
+    dataset: { category: value },
+    onclick: () => { state.category = state.category === value && value ? '' : value; update(); },
+  }, label, el('span', { class: 'count', 'aria-hidden': fullName ? 'true' : null }, ` ${n}`));
+
+  chipBox.replaceChildren(
+    chip('', 'All', packages.length),
+    ...usedCategories(catalog, packages).map((c) => chip(c.name, shortCategory(c.name), c.count, c.name)));
 }
 
 let typingTimer;
@@ -127,32 +80,32 @@ input.addEventListener('input', () => {
   clearTimeout(typingTimer);
   typingTimer = setTimeout(() => { state.q = input.value.trim(); update(); }, 120);
 });
-platformSelect.addEventListener('change', () => { state.platform = platformSelect.value; update(); });
-adminSelect.addEventListener('change', () => { state.admin = adminSelect.value; update(); });
-resetButton.addEventListener('click', clearFilters);
-form.addEventListener('submit', (event) => { event.preventDefault(); state.q = input.value.trim(); update(); });
-window.addEventListener('popstate', () => { readUrl(); render(); });
-
-// "/" focuses search, like in OpsKit.
-document.addEventListener('keydown', (event) => {
-  if (event.key === '/' && !event.ctrlKey && !event.metaKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
-    event.preventDefault();
-    input.focus();
-  }
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  state.q = input.value.trim();
+  location.href = browseHref();
 });
+focusOnSlash(input);
 
-readUrl();
+// Quick start copy button. Copies the commands without the "> " prompts.
+const quickCopy = document.getElementById('quickstart-copy');
+const quickCode = document.querySelector('.quickstart code');
+if (quickCopy && quickCode) {
+  quickCopy.hidden = false;
+  quickCopy.addEventListener('click', () => {
+    const text = [...quickCode.childNodes].filter((n) => !n.classList?.contains('prompt')).map((n) => n.textContent).join('').trim();
+    copyText(text, quickCopy);
+  });
+}
+
 try {
-  const catalog = await loadCatalog();
-  packages = catalog.packages
-    .map((pkg) => Object.assign(pkg, { _search: haystack(pkg) }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-  renderChips(catalog);
+  const result = await loadPackages();
+  packages = result.packages;
+  state.q = input.value.trim();   // the browser may restore the field on Back
+  renderChips(result.catalog);
   render();
 } catch (error) {
-  grid.setAttribute('aria-busy', 'false');
-  grid.replaceChildren(el('div', { class: 'empty' },
-    el('p', {}, `Couldn't load the catalog (${error.message}).`),
-    el('p', {}, el('a', { href: 'catalog.json' }, 'Open catalog.json'))));
-  count.textContent = '';
+  list.setAttribute('aria-busy', 'false');
+  list.replaceChildren(el('li', { class: 'finder-empty' },
+    `Couldn't load the catalog (${error.message}). `, el('a', { href: 'catalog.json' }, 'Open catalog.json')));
 }
