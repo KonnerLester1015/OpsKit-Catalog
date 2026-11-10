@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>Browse packages · OpsKit Catalog</title>
+  <meta name="description" content="Every OpsKit script package. Filter by category, platform and admin rights, then read the source and download.">
+  <meta name="opskit-repo" content="{{REPO_URL}}">
+  <meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141210" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OpsKit Catalog">
+  <meta property="og:title" content="Browse packages · OpsKit Catalog">
+  <meta property="og:description" content="Every OpsKit script package. Filter by category, platform and admin rights, then read the source and download.">
+  <meta property="og:url" content="{{BASE_URL}}browse.html">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="{{BASE_URL}}browse.html">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/site.css">
+  <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
+  <script src="assets/js/theme.js"></script>
+  <script type="module" src="assets/js/browse.js"></script>
+</head>
+<body>
+  {{HEADER:browse}}
+
+  <main id="main" tabindex="-1">
+    <div class="container">
+      <div class="browse-head">
+        <h1>Browse</h1>
+        <span id="browse-stats" class="browse-stats"></span>
+        <a class="meta-link" href="catalog.json">catalog.json ↗</a>
+      </div>
+      <form id="filters" class="search-bar search-row" role="search" action="browse.html" method="get">
+        <span class="search-prompt" aria-hidden="true">&gt;</span>
+        <label for="q" class="visually-hidden">Search packages</label>
+        <input id="q" name="q" type="search" autocomplete="off" spellcheck="false" placeholder="Search names, descriptions, tags and scripts">
+        <span class="kbd" aria-hidden="true" title="Press / to search">/</span>
+      </form>
+
+      <div class="browse-layout">
+        <aside class="browse-aside" aria-label="Filters">
+          <div class="filter-category">
+            <p class="label" id="cat-label">Category</p>
+            <div id="category-list" class="cat-list" role="group" aria-labelledby="cat-label"></div>
+          </div>
+          <div>
+            <p class="label" id="platform-label">Runs on</p>
+            <div class="segmented" role="group" aria-labelledby="platform-label" data-filter="platform">
+              <button type="button" data-value="" aria-pressed="true">Any</button>
+              <button type="button" data-value="windows" aria-pressed="false">Windows</button>
+              <button type="button" data-value="cross" aria-pressed="false" title="Windows, Linux and macOS">Cross</button>
+            </div>
+          </div>
+          <div>
+            <p class="label" id="admin-label">Admin rights</p>
+            <div class="segmented" role="group" aria-labelledby="admin-label" data-filter="admin">
+              <button type="button" data-value="" aria-pressed="true">Any</button>
+              <button type="button" data-value="yes" aria-pressed="false" title="At least one script needs admin">Needs</button>
+              <button type="button" data-value="no" aria-pressed="false" title="No script needs admin">None</button>
+            </div>
+          </div>
+          <button type="button" id="reset" class="link-button" hidden>Clear filters</button>
+        </aside>
+
+        <section aria-labelledby="list-title">
+          <div class="list-head">
+            <h2 id="list-title">All packages</h2>
+            <span id="result-count" class="result-count"></span>
+          </div>
+          <ul id="pkg-list" class="pkg-list" aria-busy="true">
+            <li class="pkg-row skeleton" aria-hidden="true"><span class="tile large"></span><span><span class="skeleton-line w60"></span><span class="skeleton-line w90"></span></span></li>
+            <li class="pkg-row skeleton" aria-hidden="true"><span class="tile large"></span><span><span class="skeleton-line w60"></span><span class="skeleton-line w90"></span></span></li>
+            <li class="pkg-row skeleton" aria-hidden="true"><span class="tile large"></span><span><span class="skeleton-line w60"></span><span class="skeleton-line w90"></span></span></li>
+            <li class="pkg-row skeleton" aria-hidden="true"><span class="tile large"></span><span><span class="skeleton-line w60"></span><span class="skeleton-line w90"></span></span></li>
+          </ul>
+          <noscript>
+            <section class="panel" aria-label="JavaScript is off">
+              <h3 class="panel-title">JavaScript is off</h3>
+              <p>The package list is built in your browser from <a href="catalog.json">catalog.json</a>. Without JavaScript you can read <a href="catalog.json">catalog.json</a> directly or <a href="{{REPO_URL}}/tree/{{BRANCH}}/packages">browse the packages on GitHub</a>.</p>
+            </section>
+          </noscript>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  {{FOOTER}}
+</body>
+</html>

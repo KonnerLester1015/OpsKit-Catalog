@@ -1,2 +1,2 @@
 /* Loaded only when JavaScript is off: hide the parts that need it. */
-.filters, .result-count, .grid, .theme-slot, .loading-block, .crumbs { display: none !important; }
+.chips, .finder-list, .finder-more, .search-row, .browse-aside, .list-head, .pkg-list, .theme-slot, .loading-block, .crumbs { display: none !important; }
