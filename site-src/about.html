@@ -17,7 +17,7 @@
   <meta name="twitter:card" content="summary">
   <link rel="canonical" href="{{BASE_URL}}about.html">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/geist-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/site.css">
   <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
@@ -59,27 +59,27 @@
 
         <h2 id="faq">FAQ</h2>
         <details>
-          <summary>How do I install a package?</summary>
+          <summary><span>How do I install a package?</span><svg class="ico ico-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
           <p>Download the zip from its package page and extract it into your OpsKit <code>Custom/</code> folder, so the package folder sits directly inside it. Restart OpsKit. Installing from inside OpsKit (Catalog › Install) is coming.</p>
         </details>
         <details>
-          <summary>How do I update a package?</summary>
+          <summary><span>How do I update a package?</span><svg class="ico ico-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
           <p>Download the new zip and extract it over the old folder. The version number is in <code>module.psd1</code> and on the package page.</p>
         </details>
         <details>
-          <summary>Can tools other than OpsKit read the catalog?</summary>
+          <summary><span>Can tools other than OpsKit read the catalog?</span><svg class="ico ico-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
           <p>Yes. <a href="catalog.json">catalog.json</a> lists every package with its scripts, parameters, download URL and SHA-256. The format is versioned and described by a <a href="{{REPO_URL}}/blob/{{BRANCH}}/schema/catalog.schema.json">JSON Schema</a>.</p>
         </details>
         <details>
-          <summary>Does the site track me?</summary>
+          <summary><span>Does the site track me?</span><svg class="ico ico-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
           <p>No. It's static files on GitHub Pages with no analytics, cookies or third-party requests. Your theme choice is saved in your browser's local storage and never leaves it. GitHub may keep its own server logs; see GitHub's privacy statement.</p>
         </details>
         <details>
-          <summary>A script did something bad. What now?</summary>
+          <summary><span>A script did something bad. What now?</span><svg class="ico ico-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
           <p>Open a <a href="{{REPO_URL}}/issues/new?template=package-problem.yml">problem report</a>. For anything that looks malicious, say so in the title and a maintainer will pull the package first and investigate after.</p>
         </details>
         <details>
-          <summary>Can I sell scripts here, or link to paid ones?</summary>
+          <summary><span>Can I sell scripts here, or link to paid ones?</span><svg class="ico ico-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
           <p>No. Everything in the catalog is free and MIT licensed, and scripts must work without a paid add-on from the author.</p>
         </details>
       </div>

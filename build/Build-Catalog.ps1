@@ -833,6 +833,7 @@ if (-not $ValidateOnly -and -not $errorList.Count) {
         '{{OPSKIT_URL}}' = "https://github.com/$RepoOwner/OpsKit"
         '{{IDEAS_URL}}'  = "$RepoUrl/blob/$Branch/IDEAS.md"
         '{{BRANCH}}'     = $Branch
+        '{{YEAR}}'       = [string](Get-Date).Year
     }
     # Shared header and footer. A page writes {{HEADER:browse}} to mark Browse as the current nav item,
     # or {{HEADER}} for none, and {{FOOTER}}. Partials are not copied to the output.
@@ -844,7 +845,7 @@ if (-not $ValidateOnly -and -not $errorList.Count) {
         param($match)
         $page = $match.Groups[1].Value
         $html = $partials['header']
-        foreach ($nav in 'BROWSE', 'SUBMIT', 'ABOUT') {
+        foreach ($nav in 'BROWSE', 'CONTRIBUTE', 'ABOUT') {
             $html = $html.Replace("{{NAV_$nav}}", $(if ($page -eq $nav) { ' aria-current="page"' } else { '' }))
         }
         $html
@@ -863,6 +864,20 @@ if (-not $ValidateOnly -and -not $errorList.Count) {
         }
         else { Copy-Item -LiteralPath $file.FullName -Destination $target }
     }
+
+    # Logo list for the package tiles: assets/logos/<PackageId>.svg|png|webp -> { "<PackageId>": "<path>" }.
+    # File names match package ids case-insensitively (Pages URLs are case-sensitive, so the real name is kept).
+    $logoDir = Join-Path $siteSrc 'assets' 'logos'
+    $logos = [ordered]@{}
+    if (Test-Path -LiteralPath $logoDir) {
+        foreach ($logo in Get-ChildItem -LiteralPath $logoDir -File | Sort-Object Name) {
+            if ($logo.Name -notmatch '^([A-Za-z][A-Za-z0-9]*)\.(svg|png|webp)$') { continue }
+            $id = @($packages.Id) | Where-Object { $_ -eq $Matches[1] } | Select-Object -First 1
+            if ($id -and -not $logos.Contains($id)) { $logos[$id] = "assets/logos/$($logo.Name)" }
+        }
+    }
+    $null = New-Item -ItemType Directory -Path (Join-Path $OutputPath 'assets' 'logos') -Force
+    [IO.File]::WriteAllText((Join-Path $OutputPath 'assets' 'logos' 'index.json'), ($logos | ConvertTo-Json -Compress), $Utf8NoBom)
 
     [IO.File]::WriteAllText((Join-Path $OutputPath 'catalog.json'), $catalogJson, $Utf8NoBom)
 

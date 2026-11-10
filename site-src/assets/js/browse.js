@@ -1,6 +1,6 @@
 import {
-  el, plural, announce, loadPackages, usedCategories, matchesFilters, monogram, countsText, packageUrl, focusOnSlash,
-  moduleBadges, isCrossPlatform, needsAdmin,
+  el, plural, announce, SEARCH_DELAY, markUpdating, playEnter, loadPackages, usedCategories, matchesFilters, packageTile, countsText, packageUrl, focusOnSlash,
+  moduleBadges, isCrossPlatform, needsAdmin, icon,
 } from './common.js';
 
 const form = document.getElementById('filters');
@@ -39,7 +39,7 @@ function row(pkg) {
 
   return el('li', {},
     el('a', { class: 'pkg-row', href: packageUrl(pkg) },
-      el('span', { class: 'tile large', 'aria-hidden': 'true' }, monogram(pkg)),
+      packageTile(pkg, true),
       el('span', { class: 'pkg-row-main' },
         el('span', { class: 'pkg-row-title' },
           el('span', { class: 'pkg-row-name' }, pkg.name),
@@ -48,7 +48,7 @@ function row(pkg) {
         el('span', { class: 'badges' }, badges)),
       el('span', { class: 'pkg-row-side' },
         el('span', { class: 'pkg-row-counts' }, countsText(pkg)),
-        el('span', { class: 'pkg-row-view', 'aria-hidden': 'true' }, 'View →'))));
+        el('span', { class: 'pkg-row-view', 'aria-hidden': 'true' }, 'View', icon('arrow-right')))));
 }
 
 function renderCategories(catalog) {
@@ -80,6 +80,7 @@ function render() {
       el('p', {}, 'No packages match these filters.'),
       el('button', { type: 'button', class: 'button secondary small', onclick: clearFilters }, 'Clear filters')));
   }
+  playEnter(list);
   title.textContent = state.category || 'All packages';
   count.textContent = `${shown.length} of ${packages.length} · A–Z`;
   resetButton.hidden = !Object.values(state).some(Boolean);
@@ -109,9 +110,10 @@ for (const group of segments) {
 let typingTimer;
 input.addEventListener('input', () => {
   clearTimeout(typingTimer);
-  typingTimer = setTimeout(() => { state.q = input.value.trim(); update(); }, 120);
+  markUpdating(list);
+  typingTimer = setTimeout(() => { state.q = input.value.trim(); update(); }, SEARCH_DELAY);
 });
-form.addEventListener('submit', (event) => { event.preventDefault(); state.q = input.value.trim(); update(); });
+form.addEventListener('submit', (event) => { event.preventDefault(); clearTimeout(typingTimer); state.q = input.value.trim(); update(); });
 resetButton.addEventListener('click', clearFilters);
 window.addEventListener('popstate', () => { readUrl(); render(); });
 focusOnSlash(input);

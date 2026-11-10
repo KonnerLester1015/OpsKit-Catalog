@@ -54,7 +54,7 @@ Script ideas for catalog packages, moved from the OpsKit repo. Entries marked âœ
 
 | Script                     | What it does                                                       |
 | -------------------------- | ------------------------------------------------------------------ |
-| âœ… Get-VMSnapshotReport    | Snapshots older than N days with size and age                      |
+| Get-VMSnapshotReport       | Snapshots older than N days with size and age                      |
 | Get-VMInventory            | VMs with CPU, memory, disk, OS, host, cluster, tools status        |
 | Get-HostHealth             | ESXi host state, alarms, CPU/memory use, uptime                    |
 | Get-DatastoreUsage         | Datastore capacity and free space with a bar chart                 |

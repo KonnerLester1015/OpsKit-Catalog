@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
-  - name: How to submit a package
-    url: https://konnerlester1015.github.io/OpsKit-Catalog/submit.html
+  - name: How to contribute a package
+    url: https://konnerlester1015.github.io/OpsKit-Catalog/contribute.html
     about: The step-by-step guide, template and checklist.

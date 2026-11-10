@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>OpsKit Catalog · PowerShell script packages for sysadmins</title>
-  <meta name="description" content="Open source, MIT-licensed PowerShell script packages for OpsKit. Read the source and download packages for Active Directory, Microsoft 365, VMware and more.">
+  <meta name="description" content="Open source, MIT-licensed PowerShell script packages for OpsKit. Read the source and download packages for Active Directory, Microsoft 365, security tools and more.">
   <meta name="opskit-repo" content="{{REPO_URL}}">
   <meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#141210" media="(prefers-color-scheme: dark)">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="OpsKit Catalog">
   <meta property="og:title" content="OpsKit Catalog · PowerShell script packages for sysadmins">
-  <meta property="og:description" content="Open source, MIT-licensed PowerShell script packages for OpsKit. Read the source and download packages for Active Directory, Microsoft 365, VMware and more.">
+  <meta property="og:description" content="Open source, MIT-licensed PowerShell script packages for OpsKit. Read the source and download packages for Active Directory, Microsoft 365, security tools and more.">
   <meta property="og:url" content="{{BASE_URL}}">
   <meta name="twitter:card" content="summary">
   <link rel="canonical" href="{{BASE_URL}}">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/geist-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/site.css">
   <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
@@ -32,10 +32,10 @@
       <section class="hero" aria-labelledby="hero-title">
         <h1 id="hero-title">PowerShell script packages for OpsKit</h1>
         <div>
-          <p class="lead">Community script packages for sysadmins: Active Directory, Microsoft 365, VMware, security tools and more. Read the code, download the zip, drop it into OpsKit.</p>
+          <p class="lead">Community script packages for sysadmins: Active Directory, Microsoft 365, security tools, backup and more. Read the code, download the zip, drop it into OpsKit.</p>
           <div class="hero-actions">
             <a class="button" href="browse.html">Browse packages</a>
-            <a class="button secondary" href="submit.html">Submit a package</a>
+            <a class="button secondary" href="contribute.html">Contribute a package</a>
           </div>
         </div>
       </section>
@@ -124,14 +124,14 @@
             </ul>
             <div class="quickstart-head">
               <p class="label" id="quickstart-label">Quick start</p>
-              <button type="button" id="quickstart-copy" class="copy-button" aria-label="Copy quick start commands" hidden>Copy</button>
+              <button type="button" id="quickstart-copy" class="copy-button" aria-label="Copy quick start commands" hidden><svg class="ico ico-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect class="front" width="14" height="14" x="8" y="8" rx="2" ry="2"/><path class="back" d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><svg class="ico ico-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span class="copy-label">Copy</span></button>
             </div>
             <pre class="quickstart" tabindex="0" aria-labelledby="quickstart-label"><code><span class="prompt" aria-hidden="true">&gt; </span>git clone {{OPSKIT_URL}}.git
 <span class="prompt" aria-hidden="true">&gt; </span>cd OpsKit
 <span class="prompt" aria-hidden="true">&gt; </span>pwsh ./OpsKit.ps1</code></pre>
             <div class="get-card-actions">
               <a class="button" href="{{OPSKIT_URL}}">View on GitHub</a>
-              <a class="button secondary" href="{{OPSKIT_URL}}/archive/refs/heads/main.zip">Download zip</a>
+              <a class="button secondary" href="{{OPSKIT_URL}}/archive/refs/heads/main.zip"><svg class="ico ico-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><g class="arrow"><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></g></svg>Download zip</a>
             </div>
           </div>
         </div>
@@ -157,7 +157,7 @@
             <li class="mini-row skeleton" aria-hidden="true"><span class="tile"></span><span class="skeleton-line w90"></span></li>
             <li class="mini-row skeleton" aria-hidden="true"><span class="tile"></span><span class="skeleton-line w40"></span></li>
           </ul>
-          <a id="finder-more" class="finder-more" href="browse.html"><span>Browse all packages</span><span aria-hidden="true">→</span></a>
+          <a id="finder-more" class="finder-more" href="browse.html"><span>Browse all packages</span><svg class="ico ico-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path class="shaft" d="M5 12h14"/><path class="head" d="m12 5 7 7-7 7"/></svg></a>
         </div>
         <noscript>
           <section class="panel" aria-label="JavaScript is off">
