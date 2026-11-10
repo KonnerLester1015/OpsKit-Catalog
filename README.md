@@ -45,7 +45,7 @@ The short version:
 3. Test them in OpsKit, then run `./build/Build-Catalog.ps1 -ValidateOnly`.
 4. Open a pull request and fill in the checklist.
 
-The full guide is on the [Submit page](https://konnerlester1015.github.io/OpsKit-Catalog/submit.html) and in
+The full guide is on the [Contribute page](https://konnerlester1015.github.io/OpsKit-Catalog/contribute.html) and in
 [CONTRIBUTING.md](CONTRIBUTING.md). Looking for something to write? See [IDEAS.md](IDEAS.md).
 
 ## Running the build locally

@@ -1,8 +1,7 @@
-/* OpsKit Catalog. Brand: warm neutrals, one orange accent (#f07a32, fills only), Archivo + JetBrains Mono.
+/* OpsKit Catalog. Brand: warm neutrals, one orange accent (#f07a32, fills only), Geist (headings at 600) + JetBrains Mono.
    Colours use light-dark(): the first value is the light theme, the second the dark theme. */
 
-@font-face { font-family: "Archivo"; font-style: normal; font-weight: 100 900; font-stretch: 100%; font-display: swap; src: url("../fonts/archivo-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-@font-face { font-family: "Archivo"; font-style: normal; font-weight: 100 900; font-stretch: 100%; font-display: swap; src: url("../fonts/archivo-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("../fonts/geist-variable.woff2") format("woff2"); }
 @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 100 800; font-display: swap; src: url("../fonts/jetbrains-mono-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 100 800; font-display: swap; src: url("../fonts/jetbrains-mono-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
 
@@ -57,7 +56,7 @@
   --term-ok: #3fb950;
   --term-border: #bdbdbd;
 
-  --font-sans: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
   --radius-xs: 5px;
   --radius-sm: 8px;
@@ -81,8 +80,8 @@ img, svg { max-width: 100%; }
 a { color: var(--accent-text); text-underline-offset: 2px; }
 a:hover { text-decoration-thickness: 2px; }
 h1, h2, h3, h4 { line-height: 1.15; margin: 0 0 .5em; letter-spacing: -.02em; }
-h1 { font-weight: 900; font-size: clamp(2rem, 1.4rem + 2.4vw, 3rem); letter-spacing: -.035em; }
-h2 { font-weight: 800; font-size: 1.5rem; }
+h1 { font-weight: 600; font-size: clamp(2rem, 1.4rem + 2.4vw, 3rem); letter-spacing: -.035em; }
+h2 { font-weight: 600; font-size: 1.5rem; }
 h3 { font-weight: 700; font-size: 1.1rem; letter-spacing: -.01em; }
 p { margin: 0 0 1em; }
 code, kbd, pre, .mono { font-family: var(--font-mono); font-size: .88em; }
@@ -112,7 +111,7 @@ pre { margin: 0; }
 .site-header .container { display: flex; align-items: center; gap: 8px 32px; flex-wrap: wrap; min-height: 68px; padding-top: 10px; padding-bottom: 10px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; white-space: nowrap; }
 .brand-icon { width: 30px; height: 29px; flex: none; }
-.brand-name { font: 900 21px/1 var(--font-sans); letter-spacing: -.03em; }
+.brand-name { font: 600 21px/1 var(--font-sans); letter-spacing: -.03em; }
 .brand-sub { font: 600 11px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
 .site-nav { display: flex; gap: 4px 28px; flex-wrap: wrap; margin-left: auto; font-weight: 600; font-size: 15px; }
 .site-nav a { color: var(--muted); text-decoration: none; padding: 6px 0; }
@@ -126,12 +125,12 @@ pre { margin: 0; }
 .theme-toggle:hover { border-color: var(--line-strong); }
 .theme-toggle svg { width: 17px; height: 17px; }
 /* Show the sun in dark mode and the moon in light mode. */
-.theme-toggle .icon-sun { display: none; }
-:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
-:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+.theme-toggle .ico-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .ico-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .ico-moon { display: none; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: block; }
-  :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
+  :root:not([data-theme="light"]) .theme-toggle .ico-sun { display: block; }
+  :root:not([data-theme="light"]) .theme-toggle .ico-moon { display: none; }
 }
 .get-opskit {
   display: inline-flex; align-items: center; gap: 8px; font: 700 14px/1 var(--font-sans); color: var(--ink);
@@ -153,6 +152,7 @@ pre { margin: 0; }
 .footer-note { display: flex; align-items: center; gap: 12px; margin: 0; }
 .footer-icon { width: 22px; height: 22px; flex: none; }
 .site-footer nav { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.footer-copy { flex-basis: 100%; margin: 12px 0 0; padding-top: 16px; border-top: 1px solid var(--line); font: 500 13px/1 var(--font-mono); color: var(--muted); }
 .site-footer a { color: var(--muted); }
 .site-footer a:hover { color: var(--ink); }
 
@@ -174,8 +174,54 @@ pre { margin: 0; }
   font: 600 .8rem/1 var(--font-sans); padding: 7px 10px; min-height: 32px; min-width: 64px; border-radius: var(--radius-sm); cursor: pointer;
   border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
 }
+.copy-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .copy-button:hover { border-color: var(--ink); }
 .copy-button.copied { border-color: var(--success); color: var(--success); }
+.copy-button .ico { width: 14px; height: 14px; }
+
+/* ---------- Animated icons ----------
+   Lucide shapes (ISC). Motion follows lucide-animated (MIT), redone in CSS because the page's
+   Content-Security-Policy allows no inline styles. Each plays when its button or link is hovered
+   or focused; prefers-reduced-motion turns them off (bottom of this file). */
+.ico { flex: none; overflow: visible; }
+.ico * { transform-box: fill-box; }
+:is(a, button, .pkg-row) { --spring: cubic-bezier(.34, 1.8, .64, 1); }
+
+/* download: the arrow drops 2px with a spring */
+.ico-download .arrow { transition: transform .45s var(--spring); }
+:is(a, button):is(:hover, :focus-visible) .ico-download .arrow { transform: translateY(2px); }
+
+/* copy: the two sheets slide apart; the check pops in once copied */
+.ico-copy .front, .ico-copy .back { transition: transform .35s cubic-bezier(.34, 1.4, .64, 1); }
+.copy-button:is(:hover, :focus-visible) .ico-copy .front { transform: translate(-3px, -3px); }
+.copy-button:is(:hover, :focus-visible) .ico-copy .back { transform: translate(3px, 3px); }
+.copy-button .ico-check, .copy-button.copied .ico-copy { display: none; }
+.copy-button.copied .ico-check { display: block; animation: ico-pop .3s var(--spring); }
+@keyframes ico-pop { from { transform: scale(.4); opacity: 0; } }
+
+/* arrow-right: the shaft shortens while the head pulls back, then both return */
+.ico-arrow-right .shaft { transform-origin: left center; }
+:is(a, .pkg-row):is(:hover, :focus-visible) .ico-arrow-right .shaft { animation: ico-shaft .4s ease; }
+:is(a, .pkg-row):is(:hover, :focus-visible) .ico-arrow-right .head { animation: ico-head .4s ease; }
+@keyframes ico-shaft { 50% { transform: scaleX(.64); } }
+@keyframes ico-head { 50% { transform: translateX(-3px); } }
+
+/* sun: the rays fade in one after another; moon: a short wobble */
+.theme-toggle:is(:hover, :focus-visible) .ico-sun .ray { animation: ico-ray .3s ease both; }
+.ico-sun .ray:nth-of-type(2) { animation-delay: .1s; }
+.ico-sun .ray:nth-of-type(3) { animation-delay: .2s; }
+.ico-sun .ray:nth-of-type(4) { animation-delay: .3s; }
+.ico-sun .ray:nth-of-type(5) { animation-delay: .4s; }
+.ico-sun .ray:nth-of-type(6) { animation-delay: .5s; }
+.ico-sun .ray:nth-of-type(7) { animation-delay: .6s; }
+.ico-sun .ray:nth-of-type(8) { animation-delay: .7s; }
+@keyframes ico-ray { from { opacity: 0; } to { opacity: 1; } }
+.theme-toggle:is(:hover, :focus-visible) .ico-moon { animation: ico-wobble 1.2s ease-in-out; }
+@keyframes ico-wobble { 20% { rotate: -10deg; } 40% { rotate: 10deg; } 60% { rotate: -5deg; } 80% { rotate: 5deg; } }
+
+/* chevron (FAQ): a small nudge in the direction it points */
+summary:is(:hover, :focus-visible) .ico-chevron path { animation: ico-nudge .5s ease; }
+@keyframes ico-nudge { 40% { transform: translateY(2px); } }
 
 /* Badges: mono labels. Accent = the category chip. */
 .badge {
@@ -216,10 +262,14 @@ pre { margin: 0; }
   display: grid; place-items: center; font: 700 11px/1 var(--font-mono); color: var(--accent-text);
 }
 .tile.large { width: 48px; height: 48px; border-radius: 10px; font-size: 14px; }
+/* Vendor logos sit on white in both themes so dark and coloured marks stay readable. */
+.tile.has-logo { background: #ffffff; border: 1px solid var(--line); padding: 6px; }
+.tile.large.has-logo { padding: 8px; }
+.tile img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
 /* ---------- Home ---------- */
 .hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px 64px; align-items: end; padding: 80px 0 56px; }
-.hero h1 { font-size: clamp(2.6rem, 1.3rem + 4.6vw, 4.75rem); line-height: .95; letter-spacing: -.045em; margin: 0; text-wrap: balance; }
+.hero h1 { font-size: clamp(2.6rem, 1.3rem + 4.6vw, 4.75rem); line-height: 1; letter-spacing: -.04em; margin: 0; text-wrap: balance; }
 .hero .lead { font-size: 18px; color: var(--text-2); margin: 0 0 24px; text-wrap: pretty; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 @media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); padding: 48px 0 36px; } }
@@ -285,7 +335,7 @@ pre { margin: 0; }
 /* Home: what OpsKit is and how to get it */
 .get-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px 64px; align-items: start; padding: 112px 0 0; scroll-margin-top: 24px; }
 .eyebrow { font: 600 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent-text); margin: 0 0 16px; }
-.get-section h2 { font: 900 clamp(2rem, 1.4rem + 2vw, 2.75rem)/1 var(--font-sans); letter-spacing: -.035em; margin: 0 0 18px; text-wrap: balance; }
+.get-section h2 { font: 600 clamp(2rem, 1.4rem + 2vw, 2.75rem)/1 var(--font-sans); letter-spacing: -.035em; margin: 0 0 18px; text-wrap: balance; }
 .get-section .lead { font-size: 18px; color: var(--text-2); margin: 0 0 32px; text-wrap: pretty; }
 .features { list-style: none; margin: 0; padding: 24px 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 24px 28px; }
 .features h3 { font-size: 16px; margin: 0 0 4px; }
@@ -294,7 +344,7 @@ pre { margin: 0; }
 .get-card { background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 30px 80px -30px var(--shadow-color); }
 .get-card-head { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid var(--line); }
 .get-card-head img { flex: none; }
-.get-card-head h3 { font-size: 18px; font-weight: 800; margin: 0; line-height: 1.2; }
+.get-card-head h3 { font-size: 18px; font-weight: 600; margin: 0; line-height: 1.2; }
 .get-card-meta { font: 500 12px/1.4 var(--font-mono); color: var(--muted); margin: 0; }
 .get-card-body { padding: 22px 24px 24px; }
 .needs { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 8px; font-size: 15px; }
@@ -345,7 +395,7 @@ pre { margin: 0; }
   display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--line);
   background: var(--surface-2); text-decoration: none; color: var(--ink); font-weight: 700; font-size: 14px;
 }
-.finder-more span:last-child { color: var(--accent-text); }
+.finder-more .ico { width: 18px; height: 18px; color: var(--accent-text); }
 .finder-more:hover span:first-child { text-decoration: underline; }
 @media (max-width: 560px) {
   .mini-row { grid-template-columns: 36px minmax(0, 1fr); }
@@ -392,7 +442,9 @@ pre { margin: 0; }
 .pkg-row-id { font: 500 12px/1 var(--font-mono); color: var(--muted); }
 .pkg-row-main { min-width: 0; }
 .pkg-row-desc { display: block; color: var(--text-2); margin: 4px 0 0; font-size: 15px; }
-.pkg-row-counts, .pkg-row-view { display: block; }
+.pkg-row-counts { display: block; }
+.pkg-row-view { display: inline-flex; align-items: center; gap: 4px; }
+.pkg-row-view .ico { width: 16px; height: 16px; }
 .pkg-row .badges { margin-top: 10px; }
 .pkg-row-side { text-align: right; }
 .pkg-row-counts { font: 500 13px/1.4 var(--font-mono); color: var(--muted); white-space: nowrap; }
@@ -412,6 +464,17 @@ pre { margin: 0; }
   .pkg-row-side { grid-column: 2; text-align: left; display: flex; gap: 12px; align-items: baseline; }
   .pkg-row-view { margin: 0; }
 }
+
+/* Result lists: dim while a search is pending, then fade the new rows in */
+.pkg-list, .finder-list { transition: opacity .15s ease; }
+.is-updating { opacity: .45; }
+.is-entering > li { animation: row-in .24s ease both; }
+.is-entering > li:nth-child(2) { animation-delay: 30ms; }
+.is-entering > li:nth-child(3) { animation-delay: 60ms; }
+.is-entering > li:nth-child(4) { animation-delay: 90ms; }
+.is-entering > li:nth-child(5) { animation-delay: 120ms; }
+.is-entering > li:nth-child(n+6) { animation-delay: 150ms; }
+@keyframes row-in { from { opacity: 0; transform: translateY(4px); } }
 
 /* Loading placeholders */
 .skeleton { pointer-events: none; }
@@ -518,17 +581,22 @@ td code { white-space: nowrap; }
 .prose h2 { margin-top: 1.8em; }
 .prose li { margin-bottom: .35em; }
 .prose pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px; overflow-x: auto; margin: 0 0 1em; }
-.steps { list-style: none; padding: 0; margin: 0; counter-reset: step; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+.steps { list-style: none; padding: 0; margin: 0; counter-reset: step; display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
 .steps > li { counter-increment: step; }
-.steps > li > .panel-title { font: 800 20px/1.2 var(--font-sans); letter-spacing: -.02em; text-transform: none; color: var(--ink); margin: 0 0 12px; }
+.steps > li.panel { margin: 0; padding: 22px 24px; }
+.steps > li > .panel-title { font: 600 20px/1.2 var(--font-sans); letter-spacing: -.02em; text-transform: none; color: var(--ink); margin: 0 0 12px; }
 .steps > li > .panel-title::before { content: counter(step, decimal-leading-zero) " · "; font: 700 12px/1 var(--font-mono); letter-spacing: .08em; color: var(--accent-text); vertical-align: 3px; }
 .check-table td:first-child { white-space: nowrap; font-family: var(--font-mono); font-size: .85rem; }
-details { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 0 16px; margin: 0 0 10px; }
-details[open] { padding-bottom: 8px; }
-summary { cursor: pointer; padding: 14px 0; font-weight: 700; list-style-position: outside; }
-summary::marker { color: var(--accent); }
+.prose .notice { margin: 8px 0 24px; }
+details { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 0 22px; margin: 0 0 10px; }
+details[open] { padding-bottom: 10px; }
+details > :not(summary) { margin-right: 32px; }
+summary { cursor: pointer; padding: 16px 0; font-weight: 700; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+summary::-webkit-details-marker { display: none; }
+summary .ico-chevron { flex: none; width: 20px; height: 20px; color: var(--accent-text); transform: rotate(-90deg); transition: transform .2s ease; }
+details[open] > summary .ico-chevron { transform: rotate(0deg); }
 summary:focus-visible { outline-offset: 4px; }
-.big-code { font: 900 clamp(5rem, 3rem + 8vw, 9rem)/1 var(--font-sans); letter-spacing: -.06em; color: var(--accent-text); margin: 0 0 8px; }
+.big-code { font: 600 clamp(5rem, 3rem + 8vw, 9rem)/1 var(--font-sans); letter-spacing: -.06em; color: var(--accent-text); margin: 0 0 8px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }

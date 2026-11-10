@@ -1,5 +1,5 @@
 import {
-  el, plural, announce, copyText, loadPackages, usedCategories, matchesFilters, monogram, countsText, shortCategory, packageUrl, focusOnSlash,
+  el, plural, announce, SEARCH_DELAY, markUpdating, playEnter, copyText, loadPackages, usedCategories, matchesFilters, packageTile, countsText, shortCategory, packageUrl, focusOnSlash,
 } from './common.js';
 
 // Filter links used to point at the home page. The full filters live on browse.html now.
@@ -26,7 +26,7 @@ function browseHref() {
 function row(pkg) {
   return el('li', {},
     el('a', { class: 'mini-row', href: packageUrl(pkg) },
-      el('span', { class: 'tile', 'aria-hidden': 'true' }, monogram(pkg)),
+      packageTile(pkg),
       el('span', { class: 'mini-text' },
         el('span', { class: 'mini-name' }, pkg.name),
         el('span', { class: 'mini-desc' }, pkg.description)),
@@ -42,6 +42,7 @@ function render() {
   list.replaceChildren(...(shown.length
     ? shown.slice(0, LIMIT).map(row)
     : [el('li', { class: 'finder-empty' }, 'No packages match.')]));
+  playEnter(list);
 
   const filtered = Boolean(state.q || state.category);
   more.href = browseHref();
@@ -78,7 +79,8 @@ function renderChips(catalog) {
 let typingTimer;
 input.addEventListener('input', () => {
   clearTimeout(typingTimer);
-  typingTimer = setTimeout(() => { state.q = input.value.trim(); update(); }, 120);
+  markUpdating(list);
+  typingTimer = setTimeout(() => { state.q = input.value.trim(); update(); }, SEARCH_DELAY);
 });
 form.addEventListener('submit', (event) => {
   event.preventDefault();

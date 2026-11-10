@@ -57,17 +57,19 @@ export function el(tag, attrs = {}, ...children) {
   return node;
 }
 
+// Lucide icon shapes (ISC licence). The parts with a class are animated in site.css, after
+// lucide-animated (MIT): the animation plays when the button or link around the icon is hovered.
 const ICONS = {
-  shield: '<path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z"/>',
   warning: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/>',
-  download: '<path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/>',
-  github: '<path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/>',
-  bug: '<path d="M8 2l1.9 1.9M16 2l-1.9 1.9M9 7.1V6a3 3 0 0 1 6 0v1.1M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6Zm0 0v-9M6 13H2M22 13h-4M6.5 8.5 4 6M17.5 8.5 20 6M6.5 17.5 4 20M17.5 17.5 20 20"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><g class="arrow"><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></g>',
+  copy: '<rect class="front" width="14" height="14" x="8" y="8" rx="2" ry="2"/><path class="back" d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  'arrow-right': '<path class="shaft" d="M5 12h14"/><path class="head" d="m12 5 7 7-7 7"/>',
 };
 
 export function icon(name) {
   const span = document.createElement('span');
-  span.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;
+  span.innerHTML = `<svg class="ico ico-${name}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;
   return span.firstElementChild;
 }
 
@@ -157,13 +159,36 @@ export function matchesFilters(pkg, filters) {
   return terms.every((term) => pkg._search.includes(term));
 }
 
+/** { PackageId: 'assets/logos/PackageId.svg' } from the build. Missing or broken means no logos. */
+async function loadLogos() {
+  try {
+    const response = await fetch('assets/logos/index.json', { cache: 'no-cache' });
+    return response.ok ? await response.json() : {};
+  } catch {
+    return {};
+  }
+}
+
 /** Loads the catalog and returns its packages sorted by name, ready for matchesFilters. */
 export async function loadPackages() {
-  const catalog = await loadCatalog();
+  const [catalog, logos] = await Promise.all([loadCatalog(), loadLogos()]);
   const packages = catalog.packages
-    .map((pkg) => Object.assign(pkg, { _search: haystack(pkg) }))
+    .map((pkg) => Object.assign(pkg, { _search: haystack(pkg), _logo: logos[pkg.id] || null }))
     .sort((a, b) => a.name.localeCompare(b.name));
   return { catalog, packages };
+}
+
+/** The square tile for a package: its logo if there is one, else its monogram. */
+export function packageTile(pkg, large = false) {
+  const tile = el('span', { class: large ? 'tile large' : 'tile', 'aria-hidden': 'true' });
+  const showMonogram = () => { tile.classList.remove('has-logo'); tile.replaceChildren(monogram(pkg)); };
+  if (pkg._logo) {
+    tile.classList.add('has-logo');
+    tile.append(el('img', { src: pkg._logo, alt: '', loading: 'lazy', decoding: 'async', onerror: showMonogram }));
+  } else {
+    showMonogram();
+  }
+  return tile;
 }
 
 /** Categories in catalog order that at least one package uses, with counts. */
@@ -173,6 +198,21 @@ export function usedCategories(catalog, packages) {
   const order = (catalog.categories || []).filter((c) => used.has(c));
   for (const c of used.keys()) if (!order.includes(c)) order.push(c);
   return order.map((name) => ({ name, count: used.get(name) }));
+}
+
+/** How long search waits after the last keystroke before it filters. */
+export const SEARCH_DELAY = 280;
+
+/** Dims a result list while a search is pending. */
+export function markUpdating(list) {
+  list.classList.add('is-updating');
+}
+
+/** Plays the fade-in on freshly rendered result rows. */
+export function playEnter(list) {
+  list.classList.remove('is-updating', 'is-entering');
+  void list.offsetWidth;   // restart the animation
+  list.classList.add('is-entering');
 }
 
 /** "/" focuses the search box, like in OpsKit. */
@@ -197,12 +237,14 @@ export async function copyText(text, button) {
     area.remove();
   }
   if (button) {
-    const original = button.dataset.label || button.textContent;
+    // Copy buttons hold a copy icon, a check icon and a .copy-label; CSS swaps the icons while .copied is set.
+    const label = button.querySelector('.copy-label') || button;
+    const original = button.dataset.label || label.textContent;
     button.dataset.label = original;
-    button.textContent = 'Copied';
+    label.textContent = 'Copied';
     button.classList.add('copied');
     clearTimeout(button._timer);
-    button._timer = setTimeout(() => { button.textContent = original; button.classList.remove('copied'); }, 2000);
+    button._timer = setTimeout(() => { label.textContent = original; button.classList.remove('copied'); }, 2000);
   }
   announce('Copied to clipboard');
 }
@@ -213,7 +255,7 @@ export function copyButton(getText, label = 'Copy', what = '') {
     class: 'copy-button',
     'aria-label': what ? `Copy ${what}` : null,
     onclick: (event) => copyText(typeof getText === 'function' ? getText() : getText, event.currentTarget),
-  }, label);
+  }, icon('copy'), icon('check'), el('span', { class: 'copy-label' }, label));
 }
 
 initThemeToggle();

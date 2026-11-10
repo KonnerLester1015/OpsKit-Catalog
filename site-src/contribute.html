@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>Contribute a package · OpsKit Catalog</title>
+  <meta name="description" content="How to add a free script package to the OpsKit Catalog: template, testing, pull request and the checks CI runs.">
+  <meta name="opskit-repo" content="{{REPO_URL}}">
+  <meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141210" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OpsKit Catalog">
+  <meta property="og:title" content="Contribute a package · OpsKit Catalog">
+  <meta property="og:description" content="How to add a free script package to the OpsKit Catalog: template, testing, pull request and the checks CI runs.">
+  <meta property="og:url" content="{{BASE_URL}}contribute.html">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="{{BASE_URL}}contribute.html">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/geist-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/site.css">
+  <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
+  <script src="assets/js/theme.js"></script>
+  <script type="module" src="assets/js/common.js"></script>
+</head>
+<body>
+  {{HEADER:contribute}}
+
+  <main id="main" tabindex="-1">
+    <div class="container">
+      <div class="page-head">
+        <h1>Contribute a package</h1>
+        <p class="lead">Packages are folders in the catalog repository. You add one with a pull request, CI checks it, a maintainer reviews it, and it goes live when it's merged.</p>
+      </div>
+
+      <div class="prose">
+        <ol class="steps">
+          <li class="panel">
+            <h2 class="panel-title">Get the template</h2>
+            <p><a class="button small" href="downloads/opskit-package-template.zip" download>Download the package template</a> or copy <a href="{{REPO_URL}}/tree/{{BRANCH}}/templates/package"><code>templates/package/</code></a> from the repository.</p>
+            <p>Rename the folder to your package id: PascalCase letters and digits, for example <code>CertificateTools</code>. The id has to be unique in the catalog.</p>
+            <ul>
+              <li><code>module.psd1</code>: name, one-line description, version, your GitHub username, category, tags and the modules every script needs.</li>
+              <li><code>Script.ps1</code>: rename it to <code>Verb-Noun.ps1</code> with an approved verb (<code>Get-Verb</code>). One script is one menu entry. Add as many as you need.</li>
+              <li><code>_Helpers.ps1</code> (optional): files starting with <code>_</code> are shared helpers, not menu entries.</li>
+              <li><code>Widgets/Widget.ps1</code> (optional): a home screen widget. Delete the folder if you don't need one.</li>
+              <li><code>README.md</code> (optional): shown on the package page.</li>
+            </ul>
+          </li>
+
+          <li class="panel">
+            <h2 class="panel-title">Write your scripts</h2>
+            <ul>
+              <li>Fill in the <code>$ScriptInfo</code> hashtable with plain values only. The catalog reads it without running your script.</li>
+              <li>Use a normal <code>param()</code> block. OpsKit prompts for mandatory parameters, using <code>HelpMessage</code> as the prompt text and <code>ValidateSet</code> as a pick list.</li>
+              <li>Return objects. OpsKit shows them as a table and offers CSV and JSON export.</li>
+              <li>Use the OpsKit helpers (<code>Read-OpsKitText</code>, <code>Write-OpsKitStatus</code>, <code>Invoke-OpsKitForEach</code>, …) instead of <code>Write-Host</code>, <code>Read-Host</code> or <code>Format-Table</code>.</li>
+              <li><code>Get-</code>, <code>Test-</code> and <code>Find-</code> scripts must be read-only. Anything that changes something must confirm first with <code>Read-OpsKitConfirm</code>.</li>
+              <li>Widgets must be fast and read-only: no prompts and no sign-ins.</li>
+            </ul>
+          </li>
+
+          <li class="panel">
+            <h2 class="panel-title">Test it in OpsKit</h2>
+            <p>Copy the folder into your OpsKit <code>Custom/</code> folder, restart OpsKit and run every script and widget. Then run the same checks CI runs, from a clone of the catalog repository:</p>
+            <pre class="copy-block"><code>Install-PSResource PSScriptAnalyzer -Scope CurrentUser
+./build/Build-Catalog.ps1 -ValidateOnly</code></pre>
+          </li>
+
+          <li class="panel">
+            <h2 class="panel-title">Open a pull request</h2>
+            <p>Fork <a href="{{REPO_URL}}">the repository</a>, add your folder under <code>packages/</code> and open a pull request. The pull request template has a short checklist. One package per pull request keeps reviews quick.</p>
+            <p>Changing a package later? Bump <code>Version</code> in <code>module.psd1</code> in the same pull request. OpsKit uses it to offer updates.</p>
+          </li>
+
+          <li class="panel">
+            <h2 class="panel-title">Pass the checks</h2>
+            <p>CI runs on every pull request and posts a summary listing what passed and what failed. The same script builds the site, so a package that passes here will publish.</p>
+            <div class="table-wrap" tabindex="0" role="region" aria-label="CI checks">
+              <table class="check-table">
+                <thead><tr><th scope="col">Check</th><th scope="col">Why</th></tr></thead>
+                <tbody>
+                  <tr><td>module.psd1</td><td>All fields present, a known category, a semantic version. OpsKit and the catalog need them to list and update your package.</td></tr>
+                  <tr><td>$ScriptInfo / $WidgetInfo</td><td>Plain values only, so metadata can be read safely without running any code.</td></tr>
+                  <tr><td>Parsing</td><td>Every <code>.ps1</code> and <code>.psd1</code> parses without errors.</td></tr>
+                  <tr><td>PSScriptAnalyzer</td><td>No errors or warnings, apart from a short documented list of excluded rules.</td></tr>
+                  <tr><td>Banned patterns</td><td><code>Invoke-Expression</code>, downloading and running code, <code>-EncodedCommand</code>, base64 payloads, turning off security tools, hard-coded secrets, writing to profiles or startup locations, and <code>Set-ExecutionPolicy</code>. These are how malicious scripts usually hide.</td></tr>
+                  <tr><td>Files and size</td><td>Only <code>.ps1</code>, <code>.psd1</code> and <code>.md</code>, at most 256 KB, no binaries. Everything must be readable in review.</td></tr>
+                  <tr><td>Version bump</td><td>If any file changed, the version must be higher than on <code>main</code>, so OpsKit users get the update.</td></tr>
+                  <tr><td>catalog.json</td><td>The generated catalog matches the published schema, so OpsKit can read it.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>If a banned pattern is a false alarm, allow that line with a comment that says why. A maintainer has to approve it.</p>
+            <pre><code># opskit-allow DownloadCode: downloads the vendor's CSV feed, never runs it</code></pre>
+          </li>
+
+          <li class="panel">
+            <h2 class="panel-title">Review and publish</h2>
+            <p>A maintainer reads every line of a new package or a change before merging. After the merge, the site and <code>catalog.json</code> rebuild within a few minutes.</p>
+          </li>
+        </ol>
+
+        <h2 id="ideas">Ideas looking for an author</h2>
+        <p>Not sure what to build? There's a backlog of scripts admins have asked for, from AD password expiry reports to Entra app secret expiry. Pick one and open a pull request.</p>
+        <p><a class="button secondary" href="{{IDEAS_URL}}">Ideas looking for an author</a></p>
+      </div>
+    </div>
+  </main>
+
+  {{FOOTER}}
+</body>
+</html>

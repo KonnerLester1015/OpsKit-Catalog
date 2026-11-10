@@ -249,6 +249,8 @@ Describe 'Site build' {
         Join-Path $site '_partials' | Should -Not -Exist
         Get-Content (Join-Path $site 'browse.html') -Raw | Should -Match '<a href="browse.html" aria-current="page">Browse</a>'
         Get-Content (Join-Path $site 'index.html') -Raw | Should -Not -Match 'aria-current'
+        Get-Content (Join-Path $site 'contribute.html') -Raw | Should -Match '<a href="contribute.html" aria-current="page">Contribute</a>'
+        Join-Path $site 'assets' 'logos' 'index.json' | Should -Exist -Because 'the logo list is always written, even when empty'
         Join-Path $site 'downloads' 'opskit-package-template.zip' | Should -Exist
     }
 
